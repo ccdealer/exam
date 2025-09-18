@@ -1,19 +1,15 @@
-from django.shortcuts import render
+from datetime import timedelta
 
-# Create your views here.
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import mixins, status
-from rest_framework.viewsets import ViewSet, GenericViewSet
+from rest_framework import mixins
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.permissions import AllowAny
-from rest_framework_simplejwt.views import TokenObtainPairView
+from drf_yasg.utils import swagger_auto_schema
+from django.utils import timezone
 
 from clients.models import Client
 from clients.serializers import ClientModelSerializer
-from drf_yasg.utils import swagger_auto_schema
-from django.shortcuts import get_object_or_404
-from datetime import timedelta
-from django.utils import timezone
 
 
 class ClientRegistrationModelVIewSet(
@@ -31,7 +27,6 @@ class ClientRegistrationModelVIewSet(
 
 class ClientActivation(
     mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
     GenericViewSet
 ):
     permission_classes = [AllowAny]
@@ -51,15 +46,10 @@ class ClientActivation(
             return Response(data="Время вышло")
         client.is_active = True
         client.save() 
-        return super().retrieve(request)
+        return Response(data={"message": "user activated "})
 
-class ClientModelViewSet(
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    GenericViewSet,
-):
+class ClientModelViewSet(ModelViewSet):
+
     permission_classes = [AllowAny]
     queryset = Client.objects.all()
     serializer_class = ClientModelSerializer

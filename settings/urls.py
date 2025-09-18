@@ -60,9 +60,8 @@ urlpatterns = [
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path('admin/', admin.site.urls),
     path("api/v1/", include(router.urls)),
-    path("activate/<int:pk>/", ClientActivation.as_view({"get":"retrieve"}), name="activate-account",),
-    path("articles/update", ArticleFillModelViewSet.as_view({"post":"create"}), name="article-update"),
-    # path("auth/login", CustomTokenObtainPairView.as_view(), name="auth/login")
+    path("auth/activate/<int:pk>/", ClientActivation.as_view({"get":"retrieve"}), name="activate-account",),
+    path("api/v1/articles/update", ArticleFillModelViewSet.as_view({"post":"create"}), name="article-update")
 ] 
 if settings.DEBUG:
     import debug_toolbar

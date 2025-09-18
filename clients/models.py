@@ -18,7 +18,7 @@ class Client(DirtyFieldsMixin, AbstractUser):
         default=True
     )
     activation_code = models.UUIDField(
-        verbose_name="Код активации",unique=True, default=uuid.uuid4()
+        verbose_name="Код активации",unique=True, null=True, blank=True
     )
     code_experetion_date = models.DateTimeField(
         verbose_name="Срок годности кода",

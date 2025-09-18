@@ -1,29 +1,24 @@
+from datetime import timedelta
+
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import mixins, status
-from rest_framework.viewsets import ViewSet, GenericViewSet
+from rest_framework.viewsets import ViewSet
 from drf_yasg.utils import swagger_auto_schema
-from django.shortcuts import get_object_or_404
-from rest_framework.permissions import AllowAny
-
-from news.models import Article
-from news.serializer import ArticlesSerializer
-
-from common.newsApi import get_news
-from datetime import timedelta
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.utils import timezone
-
-
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
-class ArticleFillModelViewSet(mixins.CreateModelMixin, GenericViewSet):
-    permission_classes = [AllowAny]
-    queryset = Article.objects.all()
-    serializer_class = ArticlesSerializer
+from news.models import Article
+from news.serializer import ArticlesSerializer, FindSerializer
+from common.newsApi import get_news
 
+
+class ArticleFillModelViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
 
     @method_decorator(cache_page(timeout=600))
+    @swagger_auto_schema(request_body=FindSerializer)
     def create(self, request, *args, **kwargs):
         data = get_news(q=request.data.get("q"))
         created_count = 0
@@ -48,12 +43,12 @@ class ArticleFillModelViewSet(mixins.CreateModelMixin, GenericViewSet):
         return Response({"status": "ok", "created": created_count}, status=201)
     
 
-class ArticleModelViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericViewSet):
+class ArticleModelViewSet(ViewSet):
     permission_classes = [AllowAny]
     queryset = Article.objects.all()
     serializer_class = ArticlesSerializer
 
-    @method_decorator(cache_page(timeout=1800))
+    # @method_decorator(cache_page(timeout=1800))
     def list(self, request:Request, *args, **kwargs):
         queryset = self.queryset
 
@@ -64,6 +59,6 @@ class ArticleModelViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, Gene
         if temp := request.query_params.get("q-title"):
             queryset = queryset.filter(title__icontains = temp)
 
-        serial = self.get_serializer(queryset, many = True)
+        serial = self.serializer_class(queryset, many = True)
         return Response(serial.data)
     

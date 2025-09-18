@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from news.models import Article
 
 class ArticlesSerializer(serializers.ModelSerializer):
@@ -16,4 +17,11 @@ class ArticlesSerializer(serializers.ModelSerializer):
             "published_at",
             "content",
         ]
+
+class FindSerializer(serializers.Serializer):
+    q = serializers.CharField()
+    domains = serializers.CharField()
+    sources = serializers.CharField()
+    language = serializers.CharField()
+    sortBy = serializers.CharField() 
 

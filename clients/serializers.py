@@ -1,11 +1,10 @@
+from django.utils import timezone
+
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 from clients.models import Client
-from datetime import timedelta
-from django.utils import timezone
+
 username_ban_list = ["admin", "маты"]
 
 class ClientModelSerializer(serializers.ModelSerializer):
