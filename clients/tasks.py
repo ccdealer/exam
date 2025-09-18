@@ -1,0 +1,1 @@
+from common.mail import send_email
